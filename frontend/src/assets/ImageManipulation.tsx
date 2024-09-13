@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useImageContext } from "../context/ImageContext";
 
@@ -34,7 +34,7 @@ const ImageManipulation: React.FC = () => {
       console.error("Error processing image:", error);
     }
   };
-    console.log("previewBlob: ", preview);
+    // console.log("previewBlob: ", preview);
     
   return (
     <div className="manipulation-section">

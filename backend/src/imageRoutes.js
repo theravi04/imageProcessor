@@ -41,34 +41,35 @@ router.post('/process', async (req, res) => {
 
 
 //for download
-router.post('/download', async (req, res) => {
-  const { brightness = 1, contrast = 1, rotation = 0, format = 'jpeg', image } = req.body;
+router.post("/download", async (req, res) => {
+  const { image, format } = req.body;
 
   if (!image) {
-    return res.status(400).json({ error: 'No image data provided.' });
+    return res.status(400).json({ error: "No image data provided." });
   }
 
   try {
     // Check if the image is a data URL and strip the prefix
-    const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
-    const imageBuffer = Buffer.from(base64Data, 'base64');
+    const base64Data = image.replace(/^data:image\/\w+;base64,/, ""); // Remove the data URL prefix
+    const imageBuffer = Buffer.from(base64Data, "base64"); // Convert base64 to buffer
 
     let processedImage = sharp(imageBuffer);
 
-    if (brightness) processedImage = processedImage.modulate({ brightness: parseFloat(brightness) });
-    if (contrast) processedImage = processedImage.linear(parseFloat(contrast));
-    if (rotation) processedImage = processedImage.rotate(parseInt(rotation));
-
-    if (format === 'jpeg') processedImage = processedImage.jpeg();
-    else if (format === 'png') processedImage = processedImage.png();
+    if (format === "jpeg") {
+      processedImage = processedImage.jpeg();
+    } else if (format === "png") {
+      processedImage = processedImage.png();
+    }
 
     const previewBuffer = await processedImage.toBuffer();
-    res.setHeader('Content-Disposition', `attachment; filename=processed-image.${format}`);
-    res.setHeader('Content-Type', `image/${format}`);
+    
+    res.setHeader("Content-Disposition", `attachment; filename=processed-image.${format}`);
+    res.setHeader("Content-Type", `image/${format}`);
     res.status(200).send(previewBuffer);
+
   } catch (error) {
-    console.error('Error processing image for download:', error);
-    res.status(500).json({ error: 'Failed to process image for download.' });
+    console.error("Error processing image for download:", error);
+    res.status(500).json({ error: "Failed to process image for download." });
   }
 });
 
